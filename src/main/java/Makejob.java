@@ -12,61 +12,66 @@ public class Makejob {
     public static int seq;
     public static String kafkaserver;
     public static boolean isfin=true;
+    String workname;
     public static String getTopic()
     {
         return jobname+level.toString()+seq;
     }
     public Makejob() throws IOException {
         /*  Example(start)
-            jobname : test
-            joblevel :start
-            seq : 1
-            kafkaserver :localhost:9092
+            workname = work1
+            jobname = test
+            joblevel = start
+            seq = 1
+            kafkaserver = localhost:9092
         */
 
         /*  Example(proceed)
-            jobname : test
-            joblevel :proceed
-            seq : 3
-            kafkaserver :localhost:9092
-            isfin : last
+            workname = work2
+            jobname = test
+            joblevel = proceed
+            seq = 3
+            kafkaserver = localhost:9092
+            isfin = last
         */
 
         /*  Example(end)
-            jobname : test
-            joblevel :end
-            seq : 1
-            kafkaserver :localhost:9092
+            workname = work3
+            jobname = test
+            joblevel = end
+            seq = 1
+            kafkaserver = localhost:9092
         */
-        URL resource = getClass().getClassLoader().getResource("jobconfig.xml");
+        URL resource = getClass().getClassLoader().getResource("jobconfig.properties");
         Path path = new File(resource.getPath()).toPath();
         List<String> contents = Files.readAllLines(path);
-        jobname = contents.get(0);
-        if (contents.get(1).equals("start")) {
+        workname = contents.get(0);
+        jobname = contents.get(1);
+        if (contents.get(2).equals("start")) {
             level = joblevel.start;
         }
-        if (contents.get(1).equals("proceed")) {
+        if (contents.get(2).equals("proceed")) {
             level = joblevel.proceed;
-            isfin = contents.get(4).equals("last");
+            isfin = contents.get(5).equals("last");
         }
-        if (contents.get(1).equals("end")) {
+        if (contents.get(2).equals("end")) {
             level = joblevel.end;
         }
-        seq = Integer.parseInt(contents.get(2));
-        kafkaserver = contents.get(3);
+        seq = Integer.parseInt(contents.get(3));
+        kafkaserver = contents.get(4);
     }
 
     public void run() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (level.equals("start")) {
-            startjob job = (startjob) Class.forName(jobname).getConstructor().newInstance();
+            startjob job = (startjob) Class.forName(workname).getConstructor().newInstance();
             job.runprocess();
         }
         if (level.equals("proceed")) {
-            proceedjob job = (proceedjob) Class.forName(jobname).getConstructor().newInstance();
+            proceedjob job = (proceedjob) Class.forName(workname).getConstructor().newInstance();
             job.runprocess();
         }
         if (level.equals("end")) {
-            endjob job = (endjob) Class.forName(jobname).getConstructor().newInstance();
+            endjob job = (endjob) Class.forName(workname).getConstructor().newInstance();
             job.runprocess();
         }
 
