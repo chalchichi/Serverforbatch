@@ -2,6 +2,8 @@ import java.util.*;
 import java.util.ArrayList;
 
 public class Message {
+
+
     private String topicname;
     List<String> messagelist = new ArrayList<String>();
     joblevel nextlevel;
@@ -32,5 +34,9 @@ public class Message {
     public void setIsfin(boolean tf)
     {
         this.isfin = tf;
+    }
+
+    public void setTopicname(String topicname) {
+        this.topicname = topicname;
     }
 }

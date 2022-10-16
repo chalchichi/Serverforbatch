@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -22,11 +23,22 @@ public class MyKafkaConsumer {
         KafkaConsumer<String, Message> consumer = new KafkaConsumer<>(properties);
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));
 
+        ArrayList<Message> messages = new ArrayList<Message>();
         Message message = null;
         try {
-            ConsumerRecords<String, Message> records = consumer.poll(Duration.ofMillis(100000));
-            for (ConsumerRecord<String, Message> record : records) {
-                message = record.value();
+            while(true) {
+                ConsumerRecords<String, Message> records = consumer.poll(Duration.ofMillis(100000));
+                if(!records.isEmpty()) {
+                    for (ConsumerRecord<String, Message> record : records) {
+                        messages.add(record.value());
+                    }
+                    message = messages.get(0);
+                    for(int i=0 ;i<messages.size() ; i++)
+                    {
+                        message.messagelist.addAll(messages.get(i).messagelist);
+                    }
+                    break;
+                }
             }
         } catch (Exception e) {
             // exception
